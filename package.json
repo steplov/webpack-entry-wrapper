@@ -1,0 +1,29 @@
+{
+  "name": "webpack-entry-wrapper",
+  "version": "0.0.1",
+  "description": "Wrap entry points with any code",
+  "homepage": "https://github.com/steplov/webpack-entry-wrapper",
+  "repository": "https://github.com/steplov/webpack-entry-wrapper",
+  "author": "Serhii Teplov <teplov.s.dp@gmail.com>",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "jest --detectOpenHandles"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^2.6.1",
+    "virtual-module-webpack-plugin": "^0.4.1"
+  },
+  "peerDependencies": {
+    "webpack": "^4.29.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.13.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0",
+    "jest": "^24.1.0",
+    "webpack": "^4.29.3"
+  }
+}
