@@ -71,12 +71,12 @@ class WebpackEntryWrapper {
       return entry;
     }
 
-    const { dir, name } = path.parse(entry);
+    const { dir, name, base } = path.parse(entry);
     const wrapper = `${dir}/${name}.wrapper.js`;
 
     new VirtualModulePlugin({
       moduleName: wrapper,
-      contents: ejs.render(this.template, { entry })
+      contents: ejs.render(this.template, { entry: `./${base}` })
     }).apply(this.compiler);
 
     return wrapper;
