@@ -1,4 +1,6 @@
 # webpack-entry-wrapper
+[![CircleCI](https://circleci.com/gh/steplov/webpack-entry-wrapper.svg?style=svg)](https://circleci.com/gh/steplov/webpack-entry-wrapper)
+
 Wrap entry points with any code
 
 ## Description
