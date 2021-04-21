@@ -1,6 +1,6 @@
 {
   "name": "webpack-entry-wrapper",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "description": "Wrap entry points with any code",
   "homepage": "https://github.com/steplov/webpack-entry-wrapper",
   "repository": "https://github.com/steplov/webpack-entry-wrapper",
