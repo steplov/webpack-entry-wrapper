@@ -2,7 +2,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/repo
   docker:
-  - image: circleci/node:10.5.0
+  - image: circleci/node:14.16.1
 
 jobs:
   test:
@@ -12,6 +12,7 @@ jobs:
     - run: npm install
     - run: npm run lint
     - run: npm test
+    - run: npm run build
 workflows:
   version: 2
   test:

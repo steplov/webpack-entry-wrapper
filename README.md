@@ -25,10 +25,17 @@ module.exports = {
   plugins: [
     new WebpackEntryWrapper({
       include: /main.js/,
-      template: 'data/template.ejs'
+      template: 'data/template.js'
     })
   ]
 }
+```
+
+template example
+```
+const entry = require('${entry}');
+
+console.log(entry);
 ```
 
 ## Options
