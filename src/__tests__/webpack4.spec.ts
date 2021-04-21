@@ -44,7 +44,7 @@ test('should wrap main entry point', async () => {
 
   expect(stats.compilation._modules.has(entryWrapperPath)).toBe(true);
   expect(stats.compilation._modules.has(entryPath)).toBe(true);
-  expect(stats.compilation._modules.get(entryWrapperPath)._source._value).toBe('const entry = require(\'./A\');\n\nconsole.log(entry);\n');
+  expect(stats.compilation._modules.get(entryWrapperPath)._source._value).toBe('const entry = require(\'./A\');\n\nconst relativePath = \'aa/bb/test\';\nconst tsPath = `./src/${relativePath}.ts`;\nconsole.log(entry);\n');
 });
 
 test('should wrap single entry point', async () => {
@@ -56,7 +56,7 @@ test('should wrap single entry point', async () => {
 
   expect(stats.compilation._modules.has(entryWrapperPath)).toBe(true);
   expect(stats.compilation._modules.has(entryPath)).toBe(true);
-  expect(stats.compilation._modules.get(entryWrapperPath)._source._value).toBe('const entry = require(\'./A\');\n\nconsole.log(entry);\n');
+  expect(stats.compilation._modules.get(entryWrapperPath)._source._value).toBe('const entry = require(\'./A\');\n\nconst relativePath = \'aa/bb/test\';\nconst tsPath = `./src/${relativePath}.ts`;\nconsole.log(entry);\n');
 });
 
 
@@ -74,8 +74,8 @@ test('should wrap array entry point', async () => {
   expect(stats.compilation._modules.has(entryWrapperBPath)).toBe(true);
   expect(stats.compilation._modules.has(aPath)).toBe(true);
   expect(stats.compilation._modules.has(bPath)).toBe(true);
-  expect(stats.compilation._modules.get(entryWrapperAPath)._source._value).toBe('const entry = require(\'./A\');\n\nconsole.log(entry);\n');
-  expect(stats.compilation._modules.get(entryWrapperBPath)._source._value).toBe('const entry = require(\'./B\');\n\nconsole.log(entry);\n');
+  expect(stats.compilation._modules.get(entryWrapperAPath)._source._value).toBe('const entry = require(\'./A\');\n\nconst relativePath = \'aa/bb/test\';\nconst tsPath = `./src/${relativePath}.ts`;\nconsole.log(entry);\n');
+  expect(stats.compilation._modules.get(entryWrapperBPath)._source._value).toBe('const entry = require(\'./B\');\n\nconst relativePath = \'aa/bb/test\';\nconst tsPath = `./src/${relativePath}.ts`;\nconsole.log(entry);\n');
 });
 
 test('should apply entry point wrapper only to selected entries', async () => {

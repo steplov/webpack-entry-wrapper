@@ -4,6 +4,7 @@ import assert from 'assert'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
 // @ts-ignore
 import SingleEntryPlugin from 'webpack/lib/SingleEntryPlugin'
+import { resolveTemplate } from './templateEngine'
 
 export interface WebpackEntryWrapperOptions {
   template: string
@@ -38,24 +39,7 @@ export default class WebpackEntryWrapper {
     this.entries = [];
   }
 
-  private static interpolate(string: string, params: Record<string, string>) {
-    const names = Object.keys(params);
-    const vals = Object.values(params);
-
-    return new Function(...names, `return \`${string}\`;`)(...vals);
-  }
-  
-
   apply(compiler: any): void {
-    // const isWebpack4 = compiler.webpack ? false : typeof compiler.resolvers !== 'undefined';
-
-    // if (isWebpack4) {
-    //   this.createEntry = new CreateEntry4(compiler);
-    // } else {
-    //   this.createEntry = new CreateEntry5(compiler);
-    // }
-    // console.log(isWebpack4);
-
     this.compiler = compiler;
     this.virtualModules.apply(this.compiler)
     compiler.hooks.entryOption.tap('WebpackEntryWrapper', (context: any, entry: any) => {
@@ -114,7 +98,7 @@ export default class WebpackEntryWrapper {
 
     const { dir, name, base } = path.parse(entry);
     const wrapper = `${dir}/${name}.wrapper.js`;
-    const contents = WebpackEntryWrapper.interpolate(this.template, { entry: `./${base}` })
+    const contents = resolveTemplate(this.template, { entry: `./${base}` })
 
     this.virtualModules.writeModule(wrapper, contents);
 
