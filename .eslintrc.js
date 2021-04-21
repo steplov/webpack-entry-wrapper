@@ -1,11 +1,16 @@
 module.exports = {
-  extends: 'airbnb-base',
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: [
+    '@typescript-eslint',
+  ],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+  ],
   rules: {
-    'no-underscore-dangle': 0,
-    'comma-dangle': [2, 'never']
-  },
-  env: {
-    node: true,
-    jest: true
+    '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/explicit-module-boundary-types': 'off'
   }
 };

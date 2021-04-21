@@ -1,9 +1,11 @@
-const path = require('path');
-const webpack = require('webpack');
-const WebpackEntryWrapper = require('../index');
+import path from 'path';
+// @ts-ignore
+import webpack from 'webpack-4';
+import WebpackEntryWrapper from '../index';
 
+jest.mock('webpack/lib/SingleEntryPlugin', () => require('webpack-4/lib/SingleEntryPlugin'), { virtual: true });
 
-const getConfig = (entry, include) => ({
+const getConfig = (entry: string | Record<string, any>, include?: RegExp): Record<string, any> => ({
   context: path.resolve(__dirname, './data'),
   entry,
   mode: 'development',
@@ -13,19 +15,19 @@ const getConfig = (entry, include) => ({
     publicPath: '/'
   },
   plugins: [
-    new webpack.optimize.LimitChunkCountPlugin({
+    new (webpack as any).optimize.LimitChunkCountPlugin({
       maxChunks: 1
     }),
 
     new WebpackEntryWrapper({
       include,
-      template: path.resolve(__dirname, 'data/template.ejs')
+      template: path.resolve(__dirname, 'data/template.js')
     })
   ]
 });
 
-const runWebpack = async options => new Promise((resolve, reject) => {
-  webpack(options, (err, stats) => {
+const runWebpack = async (options: Record<string, any>) => new Promise((resolve, reject) => {
+  webpack(options, (err: any, stats: any) => {
     if (err || stats.hasErrors()) {
       reject(err);
     }
@@ -35,7 +37,7 @@ const runWebpack = async options => new Promise((resolve, reject) => {
 });
 
 test('should wrap main entry point', async () => {
-  const stats = await runWebpack(getConfig('./A'));
+  const stats = await runWebpack(getConfig('./A')) as any;
 
   const entryWrapperPath = path.resolve(__dirname, 'data/A.wrapper.js');
   const entryPath = path.resolve(__dirname, 'data/A.js');
@@ -48,7 +50,7 @@ test('should wrap main entry point', async () => {
 test('should wrap single entry point', async () => {
   const stats = await runWebpack(getConfig({
     A: './A'
-  }));
+  })) as any;
   const entryWrapperPath = path.resolve(__dirname, 'data/A.wrapper.js');
   const entryPath = path.resolve(__dirname, 'data/A.js');
 
@@ -61,7 +63,7 @@ test('should wrap single entry point', async () => {
 test('should wrap array entry point', async () => {
   const stats = await runWebpack(getConfig({
     arr: ['./A', './B']
-  }));
+  })) as any;
 
   const entryWrapperAPath = path.resolve(__dirname, 'data/A.wrapper.js');
   const entryWrapperBPath = path.resolve(__dirname, 'data/B.wrapper.js');
@@ -79,7 +81,7 @@ test('should wrap array entry point', async () => {
 test('should apply entry point wrapper only to selected entries', async () => {
   const stats = await runWebpack(getConfig({
     arr: ['./A', './B']
-  }, /data\/A.js/));
+  }, /data\/A.js/)) as any;
 
   const entryWrapperBPath = path.resolve(__dirname, 'data/B.wrapper.js');
 
