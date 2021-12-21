@@ -2,8 +2,6 @@ import fs from 'fs'
 import path from 'path'
 import assert from 'assert'
 import VirtualModulesPlugin from 'webpack-virtual-modules'
-// @ts-ignore
-import SingleEntryPlugin from 'webpack/lib/SingleEntryPlugin'
 import { resolveTemplate } from './templateEngine'
 
 export interface WebpackEntryWrapperOptions {
@@ -41,24 +39,34 @@ export default class WebpackEntryWrapper {
 
   apply(compiler: any): void {
     this.compiler = compiler;
-    this.virtualModules.apply(this.compiler)
+    this.virtualModules.apply(this.compiler);
+
     compiler.hooks.entryOption.tap('WebpackEntryWrapper', (context: any, entry: any) => {
       this.loadTemplate(context);
-
       if (typeof entry === 'string' || Array.isArray(entry)) {
-        this.createEntryWrapper(entry, 'main');
+        if (this.isV4()) {
+          this.createEntryWrapper4(entry, 'main');
+        } else {
+          this.createEntryWrapper5(entry, 'main');
+        }
       } else {
         Object.keys(entry).forEach((name) => {
-          this.createEntryWrapper(entry[name], name);
+          if (this.isV4()) {
+            this.createEntryWrapper4(entry[name], name);
+          } else {
+            this.createEntryWrapper5(entry[name], name);
+          }
         });
       }
     });
 
-    compiler.hooks.thisCompilation.tap('WebpackEntryWrapper', () => {
-      this.entries.forEach(({ item, name }) => {
-        this.createEntryPoint(item, name);
+    if (this.isV4()) {
+      compiler.hooks.thisCompilation.tap('WebpackEntryWrapper', () => {
+        this.entries.forEach(({ item, name }) => {
+          this.createEntryPoint(item, name);
+        });
       });
-    });
+    }
   }
 
   private loadTemplate(context: any): void {
@@ -71,12 +79,27 @@ export default class WebpackEntryWrapper {
     this.template = fs.readFileSync(templatePath, { encoding: 'utf-8' });
   }
 
-  private createEntryWrapper(item: any, name: string): void {
-    const isWebpack4 = this.compiler.webpack
-      ? false
-      : typeof this.compiler.resolvers !== 'undefined';
+  private createEntryWrapper5(item: any, name: string): void {
+    if (Array.isArray(item.import)) {
+      const entries = item.import.map((i: any) => this.registerVirtualWrapper(i))
+      this.entries.push({
+        name,
+        item: entries
+      });
+      item.import = entries
+    } else {
+      const entry = this.registerVirtualWrapper(item.import)
+      this.entries.push({
+        name,
+        item: entry
+      });
+      item.import = entry
+    }
+  }
 
-    const entries = isWebpack4 ? item : item.import;
+
+  private createEntryWrapper4(item: any, name: string): void {
+    const entries = item;
 
     if (Array.isArray(entries)) {
       this.entries.push({
@@ -106,6 +129,9 @@ export default class WebpackEntryWrapper {
   }
 
   private createEntryPoint(item: any, name: string): void {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const SingleEntryPlugin = require('webpack/lib/SingleEntryPlugin')
+
     if (Array.isArray(item)) {
       item.forEach(i => {
         new SingleEntryPlugin(this.compiler.context, i, name).apply(this.compiler);
@@ -113,6 +139,14 @@ export default class WebpackEntryWrapper {
     } else {
       new SingleEntryPlugin(this.compiler.context, item, name).apply(this.compiler);
     }
+  }
+
+  private isV4(): boolean {
+    const isWebpack4 = this.compiler.webpack
+      ? false
+      : typeof this.compiler.resolvers !== 'undefined';
+    
+      return isWebpack4;
   }
 }
 
